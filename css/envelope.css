@@ -1,0 +1,350 @@
+/* ============================================
+   ENVELOPE ANIMATION CSS
+   Add this to your css/style.css file
+   ============================================ */
+
+/* Envelope Section */
+.envelope-section {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, #fff5f5 0%, #ffffff 50%, #fff5f5 100%);
+    padding: 40px 20px;
+    position: relative;
+    overflow: hidden;
+}
+
+.envelope-container {
+    max-width: 500px;
+    width: 100%;
+    position: relative;
+    perspective: 1000px;
+}
+
+/* Flowers */
+.envelope-flower {
+    position: absolute;
+    width: 150px;
+    height: auto;
+    opacity: 0.8;
+    z-index: 1;
+    animation: floatFlower 4s ease-in-out infinite;
+}
+
+.flower-left {
+    top: 10%;
+    left: -50px;
+    animation-delay: 0s;
+}
+
+.flower-right {
+    bottom: 10%;
+    right: -50px;
+    animation-delay: 1s;
+}
+
+@keyframes floatFlower {
+    0%, 100% {
+        transform: translateY(0) rotate(0deg);
+    }
+    50% {
+        transform: translateY(-20px) rotate(5deg);
+    }
+}
+
+/* Envelope Wrapper */
+.envelope-wrapper {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 1.4 / 1;
+    cursor: pointer;
+    transition: transform 0.3s ease;
+}
+
+.envelope-wrapper:hover {
+    transform: scale(1.02);
+}
+
+/* Envelope Elements */
+.envelope-close,
+.envelope-flap,
+.envelope-open,
+.envelope-seal {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    transition: all 0.6s ease;
+}
+
+.envelope-close img,
+.envelope-flap img,
+.envelope-open img,
+.envelope-seal img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
+
+/* Initial State */
+.envelope-close {
+    z-index: 3;
+    opacity: 1;
+}
+
+.envelope-flap {
+    z-index: 2;
+    opacity: 0;
+    transform: rotateX(0deg);
+    transform-origin: top center;
+}
+
+.envelope-open {
+    z-index: 1;
+    opacity: 0;
+}
+
+.envelope-seal {
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 80px;
+    height: 80px;
+    z-index: 10;
+    opacity: 1;
+    animation: sealPulse 2s ease-in-out infinite;
+}
+
+@keyframes sealPulse {
+    0%, 100% {
+        transform: translate(-50%, -50%) scale(1);
+        filter: drop-shadow(0 0 10px rgba(212, 175, 55, 0.5));
+    }
+    50% {
+        transform: translate(-50%, -50%) scale(1.1);
+        filter: drop-shadow(0 0 20px rgba(212, 175, 55, 0.8));
+    }
+}
+
+/* Envelope Content */
+.envelope-content {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 90%;
+    opacity: 0;
+    z-index: 0;
+    pointer-events: none;
+    transition: all 0.8s ease;
+}
+
+.envelope-photos {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+    margin-bottom: 20px;
+}
+
+.envelope-photo {
+    width: 120px;
+    height: 150px;
+    object-fit: cover;
+    border-radius: 10px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+    transform: scale(0.5) rotate(-10deg);
+    opacity: 0;
+    transition: all 0.6s ease;
+}
+
+.envelope-text {
+    text-align: center;
+    color: #333;
+}
+
+.envelope-text h2 {
+    font-family: 'Great Vibes', cursive;
+    font-size: 48px;
+    color: #c41e3a;
+    margin-bottom: 10px;
+}
+
+.envelope-text .wedding-date {
+    font-family: 'Playfair Display', serif;
+    font-size: 32px;
+    font-weight: 700;
+    margin-bottom: 10px;
+}
+
+.envelope-text .couple-names {
+    font-family: 'Dancing Script', cursive;
+    font-size: 28px;
+    color: #666;
+}
+
+/* Instruction */
+.envelope-instruction {
+    position: absolute;
+    bottom: -60px;
+    left: 50%;
+    transform: translateX(-50%);
+    text-align: center;
+    z-index: 5;
+    opacity: 1;
+    transition: opacity 0.3s ease;
+}
+
+.envelope-instruction p {
+    font-family: 'Roboto', sans-serif;
+    font-size: 16px;
+    color: #c41e3a;
+    font-weight: 500;
+    animation: bounce 2s ease-in-out infinite;
+}
+
+@keyframes bounce {
+    0%, 100% {
+        transform: translateY(0);
+    }
+    50% {
+        transform: translateY(-10px);
+    }
+}
+
+/* ===================================
+   OPENED STATE (applied via JS)
+   =================================== */
+.envelope-wrapper.opened .envelope-seal {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0.5);
+    pointer-events: none;
+}
+
+.envelope-wrapper.opened .envelope-close {
+    opacity: 0;
+    transition-delay: 0.3s;
+}
+
+.envelope-wrapper.opened .envelope-flap {
+    opacity: 1;
+    transform: rotateX(-180deg);
+    transition-delay: 0.2s;
+}
+
+.envelope-wrapper.opened .envelope-open {
+    opacity: 1;
+    transition-delay: 0.5s;
+}
+
+.envelope-wrapper.opened .envelope-content {
+    opacity: 1;
+    z-index: 5;
+    pointer-events: auto;
+    transition-delay: 0.8s;
+}
+
+.envelope-wrapper.opened .envelope-photo {
+    opacity: 1;
+    transform: scale(1) rotate(0deg);
+}
+
+.envelope-wrapper.opened .envelope-photo:nth-child(1) {
+    transition-delay: 1s;
+}
+
+.envelope-wrapper.opened .envelope-photo:nth-child(2) {
+    transition-delay: 1.2s;
+}
+
+.envelope-wrapper.opened .envelope-photo:nth-child(3) {
+    transition-delay: 1.4s;
+}
+
+.envelope-wrapper.opened .envelope-instruction {
+    opacity: 0;
+}
+
+.envelope-wrapper.opened {
+    cursor: default;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .envelope-container {
+        max-width: 400px;
+    }
+
+    .envelope-flower {
+        width: 120px;
+    }
+
+    .envelope-seal {
+        width: 60px;
+        height: 60px;
+    }
+
+    .envelope-photo {
+        width: 90px;
+        height: 120px;
+    }
+
+    .envelope-text h2 {
+        font-size: 36px;
+    }
+
+    .envelope-text .wedding-date {
+        font-size: 24px;
+    }
+
+    .envelope-text .couple-names {
+        font-size: 22px;
+    }
+}
+
+@media (max-width: 480px) {
+    .envelope-container {
+        max-width: 320px;
+    }
+
+    .envelope-flower {
+        width: 100px;
+    }
+
+    .flower-left {
+        left: -30px;
+    }
+
+    .flower-right {
+        right: -30px;
+    }
+
+    .envelope-seal {
+        width: 50px;
+        height: 50px;
+    }
+
+    .envelope-photo {
+        width: 70px;
+        height: 100px;
+    }
+
+    .envelope-photos {
+        gap: 8px;
+    }
+
+    .envelope-text h2 {
+        font-size: 28px;
+    }
+
+    .envelope-text .wedding-date {
+        font-size: 20px;
+    }
+
+    .envelope-text .couple-names {
+        font-size: 18px;
+    }
+
+    .envelope-instruction p {
+        font-size: 14px;
+    }
+}

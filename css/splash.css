@@ -1,0 +1,526 @@
+/* ============================================
+   SPLASH SCREEN - THIỆP CƯỚI BAN ĐẦU
+   ============================================ */
+
+.splash-screen {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(135deg, #fff5f5 0%, #ffffff 50%, #fff5f5 100%);
+    z-index: 10000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: opacity 0.8s ease, visibility 0.8s ease;
+}
+
+.splash-screen.hidden {
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+}
+
+.splash-content {
+    text-align: center;
+    max-width: 500px;
+    width: 90%;
+    position: relative;
+    animation: fadeIn 1s ease-out;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* Header - Tên cô dâu chú rể */
+.splash-header {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 15px;
+    margin-bottom: 20px;
+}
+
+.splash-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 28px;
+    font-weight: 700;
+    color: #333;
+    letter-spacing: 3px;
+    margin: 0;
+}
+
+.splash-heart {
+    font-size: 32px;
+    color: #c41e3a;
+    animation: heartBeat 1.5s ease-in-out infinite;
+}
+
+@keyframes heartBeat {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.2); }
+}
+
+/* Lời mời */
+.splash-invite {
+    margin-bottom: 30px;
+}
+
+.invite-text {
+    font-family: 'Roboto', sans-serif;
+    font-size: 16px;
+    color: #666;
+    letter-spacing: 2px;
+    margin: 0 0 10px 0;
+}
+
+.invite-name {
+    font-family: 'Dancing Script', cursive;
+    font-size: 32px;
+    color: #c41e3a;
+    margin: 0;
+}
+
+/* Hoa trang trí */
+.splash-flower {
+    position: absolute;
+    width: 120px;
+    height: auto;
+    opacity: 0.7;
+}
+
+.splash-flower-left {
+    top: 50px;
+    left: -40px;
+}
+
+.splash-flower-right {
+    bottom: 80px;
+    right: -40px;
+}
+
+/* Thiệp đóng */
+.splash-envelope-wrapper {
+    position: relative;
+    width: 100%;
+    max-width: 400px;
+    margin: 0 auto 30px;
+    cursor: pointer;
+    aspect-ratio: 1.4 / 1;
+    /* Enhanced 3D perspective for realistic diagonal fold */
+    perspective: 1500px;
+    transform-style: preserve-3d;
+}
+
+/* Envelope elements */
+.splash-envelope-close,
+.splash-envelope-flap,
+.splash-envelope-open,
+.splash-envelope-seal {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+}
+
+.splash-envelope-close img,
+.splash-envelope-flap img,
+.splash-envelope-open img,
+.splash-envelope-seal img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
+
+/* Initial state */
+.splash-envelope-close {
+    z-index: 3;
+    opacity: 1;
+    transition: opacity 0.4s ease;
+}
+
+.splash-envelope-flap {
+    z-index: 4;
+    opacity: 0;
+    transform: rotateX(0deg);
+    transform-origin: 50% 0%;
+    transition: all 1.2s cubic-bezier(0.4, 0, 0.2, 1);
+    transform-style: preserve-3d;
+}
+
+.splash-envelope-open {
+    /* This is the envelope BODY (pocket) - must stay visible */
+    z-index: 2;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.splash-envelope-seal {
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 80px;
+    height: 80px;
+    z-index: 10;
+    opacity: 1;
+    animation: sealPulse 2s ease-in-out infinite;
+}
+
+.splash-envelope-seal img {
+    filter: drop-shadow(0 0 10px rgba(212, 175, 55, 0.5));
+}
+
+/* Opened state */
+.splash-envelope-wrapper.opening .splash-envelope-seal {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0.5);
+    transition: all 0.6s ease;
+}
+
+.splash-envelope-wrapper.opening .splash-envelope-close {
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.splash-envelope-wrapper.opening .splash-envelope-open {
+    /* Show body IMMEDIATELY so it doesn't disappear */
+    opacity: 1;
+    transition: opacity 0.3s ease;
+}
+
+.splash-envelope-wrapper.opening .splash-envelope-flap {
+    opacity: 1;
+    transform: rotateZ(5deg) rotateX(-160deg) rotateZ(-5deg) translateZ(-8px);
+    transition: all 1.2s cubic-bezier(0.4, 0, 0.2, 1) 0.2s;
+}
+
+.splash-envelope-wrapper.opening .splash-click-hint {
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+/* Click hint */
+.splash-click-hint {
+    position: absolute;
+    width: 100%;
+    bottom: -50px;
+    left: 0;
+    text-align: center;
+    z-index: 20;
+    animation: bounce 2s ease-in-out infinite;
+}
+
+.splash-click-hint p {
+    font-family: 'Roboto', sans-serif;
+    font-size: 16px;
+    color: #c41e3a;
+    margin: 0;
+    white-space: nowrap;
+}
+
+@keyframes bounce {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-10px); }
+}
+
+@keyframes sealPulse {
+    0%, 100% {
+        transform: translate(-50%, -50%) scale(1);
+    }
+    50% {
+        transform: translate(-50%, -50%) scale(1.1);
+    }
+}
+
+/* Ngày cưới */
+.splash-date {
+    font-family: 'Playfair Display', serif;
+    font-size: 28px;
+    font-weight: 700;
+    color: #333;
+    margin-top: 20px;
+}
+
+.splash-date p {
+    margin: 0;
+}
+
+/* ============================================
+   SAVE THE DATE SECTION - ENVELOPE ANIMATION
+   ============================================ */
+
+.save-the-date-section {
+    padding: 80px 20px;
+    background: linear-gradient(135deg, #fff5f5 0%, #ffffff 50%, #fff5f5 100%);
+    position: relative;
+    overflow: hidden;
+}
+
+.save-the-date-container {
+    max-width: 500px;
+    margin: 0 auto;
+    position: relative;
+}
+
+/* Hoa trang trí */
+.std-flower {
+    position: absolute;
+    width: 150px;
+    height: auto;
+    opacity: 0.8;
+    z-index: 1;
+}
+
+.std-flower-left {
+    top: 10%;
+    left: -50px;
+}
+
+.std-flower-right {
+    bottom: 10%;
+    right: -50px;
+}
+
+/* Envelope Wrapper */
+.std-envelope-wrapper {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 1.4 / 1;
+    transition: all 0.5s ease;
+    /* Enhanced 3D perspective for realistic diagonal fold */
+    perspective: 1500px;
+    transform-style: preserve-3d;
+}
+
+/* Envelope elements */
+.std-envelope-close,
+.std-envelope-flap,
+.std-envelope-open,
+.std-envelope-seal {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+}
+
+.std-envelope-close img,
+.std-envelope-flap img,
+.std-envelope-open img,
+.std-envelope-seal img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
+
+/* Initial state */
+.std-envelope-close {
+    z-index: 3;
+    opacity: 1;
+    transition: opacity 0.4s ease;
+}
+
+.std-envelope-flap {
+    z-index: 4;
+    opacity: 0;
+    transform: rotateX(0deg);
+    /* Diagonal hinge axis - giống splash envelope */
+    transform-origin: 50% 0%;
+    transform-style: preserve-3d;
+}
+
+.std-envelope-open {
+    /* Envelope body - must remain visible */
+    z-index: 2;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.std-envelope-seal {
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 80px;
+    height: 80px;
+    z-index: 10;
+    opacity: 1;
+    animation: sealPulse 2s ease-in-out infinite;
+}
+
+.std-envelope-seal img {
+    filter: drop-shadow(0 0 10px rgba(212, 175, 55, 0.5));
+}
+
+/* Content inside */
+.std-envelope-content {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 90%;
+    opacity: 0;
+    z-index: 0;
+    pointer-events: none;
+    transition: all 0.8s ease;
+}
+
+.std-photos {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+    margin-bottom: 20px;
+}
+
+.std-photo {
+    width: 100px;
+    height: 130px;
+    object-fit: cover;
+    border-radius: 10px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+    transform: scale(0.5) rotate(-10deg);
+    opacity: 0;
+    transition: all 0.6s ease;
+}
+
+.std-text {
+    text-align: center;
+    color: #333;
+}
+
+.std-text h2 {
+    font-family: 'Great Vibes', cursive;
+    font-size: 48px;
+    color: #c41e3a;
+    margin-bottom: 10px;
+}
+
+.std-date {
+    font-family: 'Playfair Display', serif;
+    font-size: 32px;
+    font-weight: 700;
+    margin-bottom: 10px;
+}
+
+.std-names {
+    font-family: 'Dancing Script', cursive;
+    font-size: 28px;
+    color: #666;
+}
+
+/* ===================================
+   OPENED STATE (applied via JS)
+   =================================== */
+.std-envelope-wrapper.opened .std-envelope-seal {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0.5);
+}
+
+.std-envelope-wrapper.opened .std-envelope-close {
+    /* Fade out closed state */
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.std-envelope-wrapper.opened .std-envelope-open {
+    /* Show body immediately */
+    opacity: 1;
+    transition: opacity 0.3s ease;
+}
+
+.std-envelope-wrapper.opened .std-envelope-flap {
+    opacity: 1;
+    /* Diagonal hinge rotation - giống splash envelope */
+    transform: rotateZ(5deg) rotateX(-160deg) rotateZ(-5deg) translateZ(-8px);
+    transition: all 1.2s cubic-bezier(0.4, 0, 0.2, 1) 0.2s;
+}
+
+.std-envelope-wrapper.opened .std-envelope-content {
+    opacity: 1;
+    z-index: 5;
+    transition-delay: 0.8s;
+}
+
+.std-envelope-wrapper.opened .std-photo {
+    opacity: 1;
+    transform: scale(1) rotate(0deg);
+}
+
+.std-envelope-wrapper.opened .std-photo:nth-child(1) {
+    transition-delay: 1s;
+}
+
+.std-envelope-wrapper.opened .std-photo:nth-child(2) {
+    transition-delay: 1.2s;
+}
+
+.std-envelope-wrapper.opened .std-photo:nth-child(3) {
+    transition-delay: 1.4s;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .splash-title {
+        font-size: 24px;
+    }
+    
+    .invite-name {
+        font-size: 28px;
+    }
+    
+    .splash-envelope-wrapper {
+        max-width: 350px;
+    }
+    
+    .splash-flower {
+        width: 100px;
+    }
+    
+    .splash-flower-left {
+        left: -30px;
+    }
+    
+    .splash-flower-right {
+        right: -30px;
+    }
+    
+    .std-flower {
+        width: 120px;
+    }
+    
+    .std-photo {
+        width: 80px;
+        height: 110px;
+    }
+    
+    .std-text h2 {
+        font-size: 36px;
+    }
+    
+    .std-date {
+        font-size: 24px;
+    }
+    
+    .std-names {
+        font-size: 22px;
+    }
+}
+
+@media (max-width: 480px) {
+    .splash-title {
+        font-size: 20px;
+    }
+    
+    .splash-envelope-wrapper {
+        max-width: 300px;
+    }
+    
+    .splash-envelope-seal {
+        width: 60px;
+        height: 60px;
+    }
+    
+    .std-photo {
+        width: 70px;
+        height: 95px;
+    }
+}
