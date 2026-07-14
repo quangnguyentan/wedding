@@ -65,14 +65,18 @@ function initAlbumCarousel() {
   function nextSlide() {
     currentIndex++;
     if (currentIndex >= slides.length * 2) {
-      currentIndex = 0;
       carousel.style.transition = "none";
       carousel.style.webkitTransition = "none";
-      moveToIndex(0);
-      setTimeout(() => {
-        carousel.style.transition = "transform 0.5s ease";
-        carousel.style.webkitTransition = "-webkit-transform 0.5s ease";
-      }, 50);
+      currentIndex = 0;
+      requestAnimationFrame(() => {
+        isAnimating = false;
+        moveToIndex(0);
+
+        requestAnimationFrame(() => {
+          carousel.style.transition = "transform .5s ease";
+          carousel.style.webkitTransition = "-webkit-transform .5s ease";
+        });
+      });
     } else {
       moveToIndex(currentIndex);
     }
@@ -89,13 +93,28 @@ function initAlbumCarousel() {
 
   // Auto scroll
   function startAutoScroll() {
-    if (autoScrollInterval) clearInterval(autoScrollInterval);
-    autoScrollInterval = setInterval(() => {
-      if (!isPaused) {
+    stopAutoScroll();
+
+    autoScrollInterval = setTimeout(function run() {
+      if (!document.hidden && document.hasFocus() && !isDragging && !isPaused) {
         nextSlide();
       }
+
+      autoScrollInterval = setTimeout(run, 3000);
     }, 3000);
   }
+
+  function stopAutoScroll() {
+    clearTimeout(autoScrollInterval);
+  }
+
+  document.addEventListener("visibilitychange", () => {
+    if (document.hidden) {
+      stopAutoScroll();
+    } else {
+      startAutoScroll();
+    }
+  });
 
   // Pause on hover
   carousel.addEventListener("mouseenter", () => {
@@ -135,6 +154,7 @@ function initAlbumCarousel() {
 
   // Touch/Swipe support for mobile - iOS FIX
   let touchStartX = 0;
+  let touchStartY = 0;
   let touchEndX = 0;
   let isDragging = false;
   let moved = false;
@@ -142,7 +162,9 @@ function initAlbumCarousel() {
     "touchstart",
     (e) => {
       touchStartX = e.touches[0].clientX;
+      touchStartY = e.touches[0].clientY;
       touchEndX = touchStartX;
+
       moved = false;
       isDragging = true;
       isPaused = true;
@@ -161,11 +183,10 @@ function initAlbumCarousel() {
         moved = true;
       }
 
-      // Prevent vertical scroll on horizontal swipe
-      const deltaX = Math.abs(touchEndX - touchStartX);
-      const deltaY = Math.abs(
-        e.touches[0].clientY - (e.touches[0].clientY || 0),
-      );
+      const deltaX = Math.abs(e.touches[0].clientX - touchStartX);
+      const deltaY = Math.abs(e.touches[0].clientY - touchStartY);
+
+      touchEndX = e.touches[0].clientX;
 
       if (deltaX > deltaY) {
         e.preventDefault();
