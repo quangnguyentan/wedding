@@ -42,8 +42,8 @@ function initAlbumCarousel() {
   }
 
   // Move to specific index - iOS FIX
-  function moveToIndex(index) {
-    if (isAnimating) return;
+  function moveToIndex(index, force = false) {
+    if (isAnimating && !force) return;
     isAnimating = true;
 
     const slideWidth = slides[0].offsetWidth + 20; // width + gap
@@ -76,7 +76,8 @@ function initAlbumCarousel() {
         carousel.style.webkitTransition = "none";
 
         currentIndex = 0;
-        moveToIndex(0);
+        // force the instant jump to the real first slide (bypass isAnimating)
+        moveToIndex(0, true);
 
         // Force reflow
         carousel.offsetHeight;
