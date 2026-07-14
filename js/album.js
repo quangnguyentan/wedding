@@ -111,6 +111,9 @@ function initAlbumCarousel() {
   // Button controls
   if (nextBtn) {
     nextBtn.addEventListener("click", () => {
+      e.preventDefault();
+      e.stopPropagation();
+
       nextSlide();
       startAutoScroll(); // Reset interval
     });
@@ -118,6 +121,8 @@ function initAlbumCarousel() {
 
   if (prevBtn) {
     prevBtn.addEventListener("click", () => {
+      e.preventDefault();
+      e.stopPropagation();
       prevSlide();
       startAutoScroll(); // Reset interval
     });
@@ -189,7 +194,7 @@ function initAlbumCarousel() {
 
   // Click to view fullscreen (optional)
   slides.forEach((slide, index) => {
-    slide.addEventListener("click", () => {
+    slide.addEventListener("click", (e) => {
       if (moved) {
         e.preventDefault();
         return;
@@ -200,7 +205,7 @@ function initAlbumCarousel() {
   });
 
   clonedSlides.forEach((slide, index) => {
-    slide.addEventListener("click", () => {
+    slide.addEventListener("click", (e) => {
       if (moved) {
         e.preventDefault();
         return;
