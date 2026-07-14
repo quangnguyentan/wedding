@@ -110,21 +110,26 @@ function initAlbumCarousel() {
 
   // Button controls
   if (nextBtn) {
-    nextBtn.addEventListener("click", (e) => {
+    nextBtn.addEventListener("click", function (e) {
       e.preventDefault();
-      e.stopPropagation();
+      e.stopImmediatePropagation();
 
       nextSlide();
-      startAutoScroll(); // Reset interval
+      startAutoScroll();
+
+      return false;
     });
   }
 
   if (prevBtn) {
-    prevBtn.addEventListener("click", (e) => {
+    prevBtn.addEventListener("click", function (e) {
       e.preventDefault();
-      e.stopPropagation();
+      e.stopImmediatePropagation();
+
       prevSlide();
-      startAutoScroll(); // Reset interval
+      startAutoScroll();
+
+      return false;
     });
   }
 
