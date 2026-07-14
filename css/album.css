@@ -42,99 +42,73 @@
   padding: 40px 0;
 }
 
-/* Album Carousel */
-.album-carousel {
+/* Swiper-based Album Carousel */
+.albumSwiper {
+  width: 100%;
+}
+.albumSwiper .swiper-wrapper {
   display: flex;
-  gap: 20px;
-  transition: transform 0.5s ease;
-  -webkit-transition: -webkit-transform 0.5s ease;
-  -webkit-backface-visibility: hidden;
-  backface-visibility: hidden;
-  touch-action: pan-y pinch-zoom; /* iOS fix */
-  cursor: grab;
-}
-
-.album-carousel:active {
-  cursor: grabbing;
-}
-
-.album-carousel.paused {
-  animation-play-state: paused !important;
+  align-items: center;
 }
 
 /* Album Slide */
-.album-slide {
-  flex: 0 0 350px;
-  width: 350px;
-  min-width: 350px;
+.albumSwiper .swiper-slide {
+  width: 350px; /* desktop default */
   height: 500px;
   border-radius: 15px;
   overflow: hidden;
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
-  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-  -webkit-transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  transition:
+    transform 0.4s cubic-bezier(0.4, 0, 0.2, 1),
+    box-shadow 0.3s;
   position: relative;
   flex-shrink: 0;
   -webkit-backface-visibility: hidden;
   backface-visibility: hidden;
-  touch-action: manipulation;
 }
 
-.album-slide img {
+.albumSwiper .swiper-slide img {
   width: 100%;
   height: 100%;
   object-fit: cover;
   object-position: center;
   transition: transform 0.4s ease;
-  -webkit-transition: -webkit-transform 0.4s ease;
-  -webkit-backface-visibility: hidden;
-  backface-visibility: hidden;
-  image-rendering: -webkit-optimize-contrast; /* iOS sharp rendering */
+  image-rendering: -webkit-optimize-contrast;
   image-rendering: crisp-edges;
-  touch-action: manipulation;
 }
 
-/* Center Slide Effect */
-.album-slide.center {
-  transform: scale(1.15) translateZ(0);
-  -webkit-transform: scale(1.15) translateZ(0);
+.albumSwiper .swiper-slide.swiper-slide-active {
+  transform: scale(1.15);
   z-index: 10;
   box-shadow: 0 20px 50px rgba(196, 30, 58, 0.3);
 }
 
-.album-slide.center img {
-  transform: scale(1.05) translateZ(0);
-  -webkit-transform: scale(1.05) translateZ(0);
-}
-
-/* Side Slides */
-.album-slide:not(.center) {
-  transform: scale(0.85) translateZ(0);
-  -webkit-transform: scale(0.85) translateZ(0);
+.albumSwiper .swiper-slide:not(.swiper-slide-active) {
+  transform: scale(0.85);
   opacity: 0.7;
 }
 
-.album-slide:hover {
-  transform: scale(1.1) translateZ(0);
-  -webkit-transform: scale(1.1) translateZ(0);
-  box-shadow: 0 15px 40px rgba(196, 30, 58, 0.25);
-  z-index: 5;
+/* Responsive slide sizes */
+@media (max-width: 768px) {
+  .albumSwiper .swiper-slide {
+    width: 280px;
+  }
 }
-
-.album-slide.center:hover {
-  transform: scale(1.2);
+@media (max-width: 480px) {
+  .albumSwiper .swiper-slide {
+    width: 250px;
+  }
 }
 
 /* Navigation Arrows */
+.swiper-button-prev,
+.swiper-button-next,
 .album-nav {
   position: absolute;
   top: 50%;
   transform: translateY(-50%);
   width: 50px;
   height: 50px;
-  background: rgba(255, 255, 255, 0.9);
-  border: 2px solid #c41e3a;
-  border-radius: 50%;
   font-size: 28px;
   color: #c41e3a;
   cursor: pointer;
@@ -142,7 +116,6 @@
   align-items: center;
   justify-content: center;
   transition: all 0.3s ease;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
   z-index: 99999;
   pointer-events: auto;
   -webkit-tap-highlight-color: transparent;
@@ -227,7 +200,7 @@
     font-size: 22px;
   }
 
-  .album-slide {
+  .albumSwiper .swiper-slide {
     flex: 0 0 280px;
     width: 280px;
     min-width: 280px;
@@ -238,21 +211,21 @@
     height: 40px;
     font-size: 24px;
   }
+  .albumSwiper .swiper-slide {
+    width: 280px;
+  }
 
-  .album-prev {
+  .swiper-button-prev,
+  .swiper-button-next {
+    width: 40px;
+    height: 40px;
+    font-size: 24px;
+  }
+  .swiper-button-prev {
     left: 10px;
   }
-
-  .album-next {
+  .swiper-button-next {
     right: 10px;
-  }
-
-  .album-slide.center {
-    transform: scale(1.1);
-  }
-
-  .album-slide:not(.center) {
-    transform: scale(0.9);
   }
 }
 
@@ -265,13 +238,15 @@
     font-size: 28px;
   }
 
-  .album-slide {
+  .albumSwiper .swiper-slide {
     flex: 0 0 250px;
     width: 250px;
     min-width: 250px;
   }
-
-  .album-carousel {
+  .albumSwiper .swiper-slide {
+    width: 250px;
+  }
+  .albumSwiper {
     gap: 15px;
   }
 }

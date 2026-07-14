@@ -1,302 +1,51 @@
-/* ============================================
-   HORIZONTAL ALBUM CAROUSEL JAVASCRIPT
-   Add this to your js/main.js file
-   Or create a new js/album.js file
-   ============================================ */
-
-// ===================================
-// HORIZONTAL ALBUM CAROUSEL
-// ===================================
-function initAlbumCarousel() {
-  const carousel = document.getElementById("albumCarousel");
-  const slides = document.querySelectorAll(".album-slide");
-  const prevBtn = document.querySelector(".album-prev");
-  const nextBtn = document.querySelector(".album-next");
-
-  if (!carousel || slides.length === 0) return;
-
-  let currentIndex = 0;
-  let isAnimating = false;
-  let autoScrollInterval;
-  let isPaused = false;
-
-  // Clone slides for infinite loop
-  const clonedSlides = [];
-  slides.forEach((slide) => {
-    const clone = slide.cloneNode(true);
-    // Prevent eager decoding on clones to avoid high memory usage on mobile Safari
-    const img = clone.querySelector && clone.querySelector("img");
-    if (img) {
-      try {
-        img.loading = "lazy";
-        img.decoding = "async";
-      } catch (e) {}
-    }
-    carousel.appendChild(clone);
-    clonedSlides.push(clone);
-  });
-
-  // Update center slide
-  function updateCenterSlide() {
-    const allSlides = carousel.querySelectorAll(".album-slide");
-    allSlides.forEach((slide, index) => {
-      slide.classList.remove("center");
-    });
-
-    const centerIndex = Math.floor(currentIndex % allSlides.length);
-    if (allSlides[centerIndex]) {
-      allSlides[centerIndex].classList.add("center");
-    }
-  }
-
-  // Move to specific index - iOS FIX
-  function moveToIndex(index) {
-    if (isAnimating) return;
-    isAnimating = true;
-
-    const slideWidth = slides[0].offsetWidth + 20; // width + gap
-    const offset = -index * slideWidth + window.innerWidth / 2 - slideWidth / 2;
-
-    // iOS Safari fix: use both webkit and standard transform
-    carousel.style.webkitTransform = `translateX(${offset}px)`;
-    carousel.style.transform = `translateX(${offset}px)`;
-    currentIndex = index;
-
-    updateCenterSlide();
-
-    setTimeout(() => {
-      isAnimating = false;
-    }, 500);
-  }
-
-  // Next slide - iOS FIX
-  function nextSlide() {
-    if (isAnimating) return;
-
-    currentIndex++;
-
-    // Đến hết ảnh gốc + clone
-    if (currentIndex >= slides.length) {
-      moveToIndex(currentIndex);
-
-      setTimeout(() => {
-        carousel.style.transition = "none";
-        carousel.style.webkitTransition = "none";
-
-        currentIndex = 0;
-        moveToIndex(0);
-
-        // Force reflow
-        carousel.offsetHeight;
-
-        carousel.style.transition = "transform .5s ease";
-        carousel.style.webkitTransition = "-webkit-transform .5s ease";
-      }, 500);
-
-      return;
-    }
-
-    moveToIndex(currentIndex);
-  }
-
-  // Previous slide
-  function prevSlide() {
-    currentIndex--;
-    if (currentIndex < 0) {
-      currentIndex = slides.length - 1;
-    }
-    moveToIndex(currentIndex);
-  }
-
-  // Auto scroll
-  function startAutoScroll() {
-    stopAutoScroll();
-
-    autoScrollInterval = setTimeout(function run() {
-      if (!document.hidden && document.hasFocus() && !isDragging && !isPaused) {
-        nextSlide();
-      }
-
-      autoScrollInterval = setTimeout(run, 3000);
-    }, 3000);
-  }
-
-  function stopAutoScroll() {
-    clearTimeout(autoScrollInterval);
-  }
-
-  document.addEventListener("visibilitychange", () => {
-    if (document.hidden) {
-      stopAutoScroll();
-    } else {
-      startAutoScroll();
-    }
-  });
-
-  // Pause on hover
-  carousel.addEventListener("mouseenter", () => {
-    isPaused = true;
-    carousel.classList.add("paused");
-  });
-
-  carousel.addEventListener("mouseleave", () => {
-    isPaused = false;
-    carousel.classList.remove("paused");
-  });
-
-  // Button controls
-  if (nextBtn) {
-    nextBtn.addEventListener("click", function (e) {
-      e.preventDefault();
-      e.stopImmediatePropagation();
-
-      nextSlide();
-      startAutoScroll();
-
-      return false;
-    });
-  }
-
-  if (prevBtn) {
-    prevBtn.addEventListener("click", function (e) {
-      e.preventDefault();
-      e.stopImmediatePropagation();
-
-      prevSlide();
-      startAutoScroll();
-
-      return false;
-    });
-  }
-
-  // Touch/Swipe support for mobile - iOS FIX
-  let touchStartX = 0;
-  let touchStartY = 0;
-  let touchEndX = 0;
-  let isDragging = false;
-  let moved = false;
-  carousel.addEventListener(
-    "touchstart",
-    (e) => {
-      touchStartX = e.touches[0].clientX;
-      touchStartY = e.touches[0].clientY;
-      touchEndX = touchStartX;
-
-      moved = false;
-      isDragging = true;
-      isPaused = true;
-      carousel.style.cursor = "grabbing";
-    },
-    { passive: true },
-  );
-
-  carousel.addEventListener(
-    "touchmove",
-    (e) => {
-      if (!isDragging) return;
-      touchEndX = e.touches[0].clientX;
-
-      if (Math.abs(touchEndX - touchStartX) > 10) {
-        moved = true;
-      }
-
-      const deltaX = Math.abs(e.touches[0].clientX - touchStartX);
-      const deltaY = Math.abs(e.touches[0].clientY - touchStartY);
-
-      touchEndX = e.touches[0].clientX;
-
-      if (deltaX > deltaY) {
-        e.preventDefault();
-      }
-    },
-    { passive: false },
-  ); // IMPORTANT: passive: false for iOS
-
-  carousel.addEventListener(
-    "touchend",
-    () => {
-      if (!isDragging) return;
-      if (moved) {
-        const swipeDistance = touchStartX - touchEndX;
-
-        if (Math.abs(swipeDistance) > 50) {
-          if (swipeDistance > 0) {
-            nextSlide();
-          } else {
-            prevSlide();
-          }
-        }
-      }
-      isDragging = false;
-      isPaused = false;
-      moved = false;
-      carousel.style.cursor = "grab";
-      startAutoScroll();
-    },
-    { passive: true },
-  );
-
-  // Click to view fullscreen (optional)
-  slides.forEach((slide, index) => {
-    slide.addEventListener("click", (e) => {
-      if (moved) {
-        e.preventDefault();
-        return;
-      }
-
-      openLightbox(index);
-    });
-  });
-
-  clonedSlides.forEach((slide, index) => {
-    slide.addEventListener("click", (e) => {
-      if (moved) {
-        e.preventDefault();
-        return;
-      }
-      openLightbox(index);
-    });
-  });
-
-  // Lightbox functionality
-  function openLightbox(index) {
-    const lightbox = document.createElement("div");
-    lightbox.className = "album-lightbox active";
-
-    const img = document.createElement("img");
-    img.src = slides[index].querySelector("img").src;
-
-    const closeBtn = document.createElement("div");
-    closeBtn.className = "album-lightbox-close";
-    closeBtn.innerHTML = "×";
-    closeBtn.onclick = () => lightbox.remove();
-
-    lightbox.appendChild(img);
-    lightbox.appendChild(closeBtn);
-    document.body.appendChild(lightbox);
-
-    lightbox.addEventListener("click", (e) => {
-      if (e.target === lightbox) {
-        lightbox.remove();
-      }
-    });
-  }
-
-  // Initialize
-  moveToIndex(0);
-  startAutoScroll();
-
-  // Reinitialize on window resize
-  let resizeTimer;
-  window.addEventListener("resize", () => {
-    clearTimeout(resizeTimer);
-    resizeTimer = setTimeout(() => {
-      moveToIndex(currentIndex);
-    }, 250);
-  });
-}
-
-// Initialize when DOM is loaded
+// Swiper-based album carousel initializer
 document.addEventListener("DOMContentLoaded", () => {
-  initAlbumCarousel();
+  if (typeof Swiper === "undefined") return;
+
+  const album = new Swiper(".albumSwiper", {
+    loop: true,
+    centeredSlides: true,
+    slidesPerView: "auto",
+    spaceBetween: 20,
+    autoplay: {
+      delay: 3000,
+      disableOnInteraction: false,
+    },
+    speed: 600,
+    lazy: {
+      loadPrevNext: true,
+      loadOnTransitionStart: true,
+    },
+    navigation: {
+      nextEl: ".swiper-button-next",
+      prevEl: ".swiper-button-prev",
+    },
+    // accessibility: true,
+  });
+
+  // Lightbox: reuse existing openLightboxSingle if present
+  document.querySelectorAll(".albumSwiper .swiper-slide img").forEach((img) => {
+    img.addEventListener("click", (e) => {
+      const src = e.currentTarget.src;
+      if (typeof openLightboxSingle === "function") {
+        openLightboxSingle(src);
+      } else {
+        // fallback simple lightbox
+        const lightbox = document.createElement("div");
+        lightbox.className = "album-lightbox active";
+        const im = document.createElement("img");
+        im.src = src;
+        lightbox.appendChild(im);
+        const close = document.createElement("div");
+        close.className = "album-lightbox-close";
+        close.innerHTML = "×";
+        close.onclick = () => lightbox.remove();
+        lightbox.appendChild(close);
+        document.body.appendChild(lightbox);
+        lightbox.addEventListener("click", (ev) => {
+          if (ev.target === lightbox) lightbox.remove();
+        });
+      }
+    });
+  });
 });
