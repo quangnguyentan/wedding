@@ -63,23 +63,32 @@ function initAlbumCarousel() {
 
   // Next slide - iOS FIX
   function nextSlide() {
+    if (isAnimating) return;
+
     currentIndex++;
-    if (currentIndex >= slides.length * 2) {
-      carousel.style.transition = "none";
-      carousel.style.webkitTransition = "none";
-      currentIndex = 0;
-      requestAnimationFrame(() => {
-        isAnimating = false;
+
+    // Đến hết ảnh gốc + clone
+    if (currentIndex >= slides.length) {
+      moveToIndex(currentIndex);
+
+      setTimeout(() => {
+        carousel.style.transition = "none";
+        carousel.style.webkitTransition = "none";
+
+        currentIndex = 0;
         moveToIndex(0);
 
-        requestAnimationFrame(() => {
-          carousel.style.transition = "transform .5s ease";
-          carousel.style.webkitTransition = "-webkit-transform .5s ease";
-        });
-      });
-    } else {
-      moveToIndex(currentIndex);
+        // Force reflow
+        carousel.offsetHeight;
+
+        carousel.style.transition = "transform .5s ease";
+        carousel.style.webkitTransition = "-webkit-transform .5s ease";
+      }, 500);
+
+      return;
     }
+
+    moveToIndex(currentIndex);
   }
 
   // Previous slide
