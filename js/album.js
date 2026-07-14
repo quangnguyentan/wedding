@@ -127,16 +127,18 @@ function initAlbumCarousel() {
   let touchStartX = 0;
   let touchEndX = 0;
   let isDragging = false;
-
+  let moved = false;
   carousel.addEventListener(
     "touchstart",
     (e) => {
       touchStartX = e.touches[0].clientX;
+      touchEndX = touchStartX;
+      moved = false;
       isDragging = true;
       isPaused = true;
       carousel.style.cursor = "grabbing";
     },
-    {passive: true},
+    { passive: true },
   );
 
   carousel.addEventListener(
@@ -144,6 +146,10 @@ function initAlbumCarousel() {
     (e) => {
       if (!isDragging) return;
       touchEndX = e.touches[0].clientX;
+
+      if (Math.abs(touchEndX - touchStartX) > 10) {
+        moved = true;
+      }
 
       // Prevent vertical scroll on horizontal swipe
       const deltaX = Math.abs(touchEndX - touchStartX);
@@ -155,41 +161,50 @@ function initAlbumCarousel() {
         e.preventDefault();
       }
     },
-    {passive: false},
+    { passive: false },
   ); // IMPORTANT: passive: false for iOS
 
   carousel.addEventListener(
     "touchend",
     () => {
       if (!isDragging) return;
+      if (moved) {
+        const swipeDistance = touchStartX - touchEndX;
 
-      const swipeDistance = touchStartX - touchEndX;
-
-      if (Math.abs(swipeDistance) > 50) {
-        if (swipeDistance > 0) {
-          nextSlide();
-        } else {
-          prevSlide();
+        if (Math.abs(swipeDistance) > 50) {
+          if (swipeDistance > 0) {
+            nextSlide();
+          } else {
+            prevSlide();
+          }
         }
       }
-
       isDragging = false;
       isPaused = false;
       carousel.style.cursor = "grab";
       startAutoScroll();
     },
-    {passive: true},
+    { passive: true },
   );
 
   // Click to view fullscreen (optional)
   slides.forEach((slide, index) => {
     slide.addEventListener("click", () => {
+      if (moved) {
+        e.preventDefault();
+        return;
+      }
+
       openLightbox(index);
     });
   });
 
   clonedSlides.forEach((slide, index) => {
     slide.addEventListener("click", () => {
+      if (moved) {
+        e.preventDefault();
+        return;
+      }
       openLightbox(index);
     });
   });

@@ -82,6 +82,7 @@
   transform: translateZ(0);
   -webkit-backface-visibility: hidden;
   backface-visibility: hidden;
+  touch-action: manipulation;
 }
 
 .album-slide img {
@@ -95,6 +96,7 @@
   transform: translateZ(0);
   image-rendering: -webkit-optimize-contrast; /* iOS sharp rendering */
   image-rendering: crisp-edges;
+  touch-action: manipulation;
 }
 
 /* Center Slide Effect */
@@ -175,6 +177,8 @@
   z-index: 9999;
   justify-content: center;
   align-items: center;
+  pointer-events: auto;
+  touch-action: none;
 }
 
 .album-lightbox.active {
