@@ -110,7 +110,7 @@ function initAlbumCarousel() {
 
   // Button controls
   if (nextBtn) {
-    nextBtn.addEventListener("click", () => {
+    nextBtn.addEventListener("click", (e) => {
       e.preventDefault();
       e.stopPropagation();
 
@@ -120,7 +120,7 @@ function initAlbumCarousel() {
   }
 
   if (prevBtn) {
-    prevBtn.addEventListener("click", () => {
+    prevBtn.addEventListener("click", (e) => {
       e.preventDefault();
       e.stopPropagation();
       prevSlide();
