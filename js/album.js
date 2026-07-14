@@ -212,6 +212,7 @@ function initAlbumCarousel() {
       }
       isDragging = false;
       isPaused = false;
+      moved = false;
       carousel.style.cursor = "grab";
       startAutoScroll();
     },
