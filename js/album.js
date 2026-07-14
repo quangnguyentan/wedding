@@ -46,7 +46,10 @@ function initAlbumCarousel() {
     if (isAnimating && !force) return;
     isAnimating = true;
 
-    const slideWidth = slides[0].offsetWidth + 20; // width + gap
+    // compute slide width including the current CSS gap (responsive)
+    const computed = window.getComputedStyle(carousel);
+    const gap = parseFloat(computed.gap || computed.columnGap) || 20;
+    const slideWidth = slides[0].offsetWidth + gap; // width + gap
     const offset = -index * slideWidth + window.innerWidth / 2 - slideWidth / 2;
 
     // iOS Safari fix: use both webkit and standard transform
@@ -69,9 +72,24 @@ function initAlbumCarousel() {
 
     // Đến hết ảnh gốc + clone
     if (currentIndex >= slides.length) {
+      // move to the clone (animated)
       moveToIndex(currentIndex);
 
-      setTimeout(() => {
+      // After the transform transition finishes, jump to the real first slide
+      // without animation. Use transitionend to avoid timer races on iOS.
+      const onTransitionEnd = (e) => {
+        // ensure we react only to transform transitions on the carousel
+        const prop =
+          e.propertyName || (e.originalEvent && e.originalEvent.propertyName);
+        if (
+          e.target !== carousel ||
+          (prop !== "transform" && prop !== "-webkit-transform")
+        )
+          return;
+
+        carousel.removeEventListener("transitionend", onTransitionEnd);
+        carousel.removeEventListener("webkitTransitionEnd", onTransitionEnd);
+
         carousel.style.transition = "none";
         carousel.style.webkitTransition = "none";
 
@@ -84,7 +102,10 @@ function initAlbumCarousel() {
 
         carousel.style.transition = "transform .5s ease";
         carousel.style.webkitTransition = "-webkit-transform .5s ease";
-      }, 500);
+      };
+
+      carousel.addEventListener("transitionend", onTransitionEnd);
+      carousel.addEventListener("webkitTransitionEnd", onTransitionEnd);
 
       return;
     }
@@ -275,9 +296,37 @@ function initAlbumCarousel() {
     });
   }
 
-  // Initialize
-  moveToIndex(0);
-  startAutoScroll();
+  // Initialize after carousel images have loaded to get stable measurements
+  const carouselImages = carousel.querySelectorAll("img");
+  if (carouselImages.length === 0) {
+    moveToIndex(0);
+    startAutoScroll();
+  } else {
+    let loaded = 0;
+    const tryInit = () => {
+      loaded++;
+      if (loaded >= carouselImages.length) {
+        moveToIndex(0);
+        startAutoScroll();
+      }
+    };
+
+    carouselImages.forEach((img) => {
+      if (img.complete && img.naturalWidth !== 0) {
+        // already loaded
+        loaded++;
+      } else {
+        img.addEventListener("load", tryInit, { once: true });
+        img.addEventListener("error", tryInit, { once: true });
+      }
+    });
+
+    // In case all images were already complete
+    if (loaded >= carouselImages.length) {
+      moveToIndex(0);
+      startAutoScroll();
+    }
+  }
 
   // Reinitialize on window resize
   let resizeTimer;
