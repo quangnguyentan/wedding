@@ -24,6 +24,13 @@ function initAlbumCarousel() {
   const clonedSlides = [];
   slides.forEach((slide) => {
     const clone = slide.cloneNode(true);
+    const img = clone.querySelector && clone.querySelector("img");
+    if (img) {
+      try {
+        img.loading = "lazy";
+        img.decoding = "async";
+      } catch (e) {}
+    }
     carousel.appendChild(clone);
     clonedSlides.push(clone);
   });

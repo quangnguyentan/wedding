@@ -48,11 +48,8 @@
   gap: 20px;
   transition: transform 0.5s ease;
   -webkit-transition: -webkit-transform 0.5s ease;
-  will-change: transform;
   -webkit-backface-visibility: hidden;
   backface-visibility: hidden;
-  -webkit-perspective: 1000;
-  perspective: 1000;
   touch-action: pan-y pinch-zoom; /* iOS fix */
   cursor: grab;
 }
@@ -78,8 +75,6 @@
   -webkit-transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
   position: relative;
   flex-shrink: 0;
-  -webkit-transform: translateZ(0); /* iOS hardware acceleration */
-  transform: translateZ(0);
   -webkit-backface-visibility: hidden;
   backface-visibility: hidden;
   touch-action: manipulation;
@@ -92,8 +87,8 @@
   object-position: center;
   transition: transform 0.4s ease;
   -webkit-transition: -webkit-transform 0.4s ease;
-  -webkit-transform: translateZ(0); /* iOS fix */
-  transform: translateZ(0);
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
   image-rendering: -webkit-optimize-contrast; /* iOS sharp rendering */
   image-rendering: crisp-edges;
   touch-action: manipulation;
