@@ -24,6 +24,7 @@ function initAlbumCarousel() {
   const clonedSlides = [];
   slides.forEach((slide) => {
     const clone = slide.cloneNode(true);
+    // Prevent eager decoding on clones to avoid high memory usage on mobile Safari
     const img = clone.querySelector && clone.querySelector("img");
     if (img) {
       try {
@@ -49,14 +50,11 @@ function initAlbumCarousel() {
   }
 
   // Move to specific index - iOS FIX
-  function moveToIndex(index, force = false) {
-    if (isAnimating && !force) return;
+  function moveToIndex(index) {
+    if (isAnimating) return;
     isAnimating = true;
 
-    // compute slide width including the current CSS gap (responsive)
-    const computed = window.getComputedStyle(carousel);
-    const gap = parseFloat(computed.gap || computed.columnGap) || 20;
-    const slideWidth = slides[0].offsetWidth + gap; // width + gap
+    const slideWidth = slides[0].offsetWidth + 20; // width + gap
     const offset = -index * slideWidth + window.innerWidth / 2 - slideWidth / 2;
 
     // iOS Safari fix: use both webkit and standard transform
@@ -79,40 +77,21 @@ function initAlbumCarousel() {
 
     // Đến hết ảnh gốc + clone
     if (currentIndex >= slides.length) {
-      // move to the clone (animated)
       moveToIndex(currentIndex);
 
-      // After the transform transition finishes, jump to the real first slide
-      // without animation. Use transitionend to avoid timer races on iOS.
-      const onTransitionEnd = (e) => {
-        // ensure we react only to transform transitions on the carousel
-        const prop =
-          e.propertyName || (e.originalEvent && e.originalEvent.propertyName);
-        if (
-          e.target !== carousel ||
-          (prop !== "transform" && prop !== "-webkit-transform")
-        )
-          return;
-
-        carousel.removeEventListener("transitionend", onTransitionEnd);
-        carousel.removeEventListener("webkitTransitionEnd", onTransitionEnd);
-
+      setTimeout(() => {
         carousel.style.transition = "none";
         carousel.style.webkitTransition = "none";
 
         currentIndex = 0;
-        // force the instant jump to the real first slide (bypass isAnimating)
-        moveToIndex(0, true);
+        moveToIndex(0);
 
         // Force reflow
         carousel.offsetHeight;
 
         carousel.style.transition = "transform .5s ease";
         carousel.style.webkitTransition = "-webkit-transform .5s ease";
-      };
-
-      carousel.addEventListener("transitionend", onTransitionEnd);
-      carousel.addEventListener("webkitTransitionEnd", onTransitionEnd);
+      }, 500);
 
       return;
     }
@@ -303,37 +282,9 @@ function initAlbumCarousel() {
     });
   }
 
-  // Initialize after carousel images have loaded to get stable measurements
-  const carouselImages = carousel.querySelectorAll("img");
-  if (carouselImages.length === 0) {
-    moveToIndex(0);
-    startAutoScroll();
-  } else {
-    let loaded = 0;
-    const tryInit = () => {
-      loaded++;
-      if (loaded >= carouselImages.length) {
-        moveToIndex(0);
-        startAutoScroll();
-      }
-    };
-
-    carouselImages.forEach((img) => {
-      if (img.complete && img.naturalWidth !== 0) {
-        // already loaded
-        loaded++;
-      } else {
-        img.addEventListener("load", tryInit, { once: true });
-        img.addEventListener("error", tryInit, { once: true });
-      }
-    });
-
-    // In case all images were already complete
-    if (loaded >= carouselImages.length) {
-      moveToIndex(0);
-      startAutoScroll();
-    }
-  }
+  // Initialize
+  moveToIndex(0);
+  startAutoScroll();
 
   // Reinitialize on window resize
   let resizeTimer;
