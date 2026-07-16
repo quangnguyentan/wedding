@@ -111,6 +111,7 @@
   grid-column: 1;
   justify-self: end;
   text-align: right;
+  transform: translateY(-120px);
 }
 
 /* Timeline Media (Circle Image) */
@@ -148,7 +149,6 @@
 
   /* đẩy text lên ngang nút timeline */
   justify-content: center;
-  transform: translateY(-45px);
 }
 
 .timeline-date {
@@ -228,7 +228,6 @@
 
   .timeline-body {
     max-width: 100%;
-    transform: translateY(-22px);
   }
 
   .timeline-title {
