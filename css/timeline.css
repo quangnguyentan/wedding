@@ -111,7 +111,7 @@
   grid-column: 1;
   justify-self: end;
   text-align: right;
-  transform: translateY(-130px);
+    margin-top: -160px; /* thử -40, -50, -60 */
 }
 
 /* Timeline Media (Circle Image) */
